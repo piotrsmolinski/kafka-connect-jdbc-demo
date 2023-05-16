@@ -1,4 +1,4 @@
-# JDBC sink configuration where the record schema is disscovered
+# JDBC sink configuration where the record schema is discovered
 connector.class: "io.confluent.connect.jdbc.JdbcSinkConnector"
 
 tasks.max: 1
