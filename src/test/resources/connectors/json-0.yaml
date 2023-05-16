@@ -1,0 +1,39 @@
+# Baseline test configuration that uses default JSON converter
+# The test fails because JDBC sink expects flat structured data:
+# Kafka Connect Struct with primitive fields
+connector.class: "io.confluent.connect.jdbc.JdbcSinkConnector"
+
+tasks.max: 1
+
+topics.regex: "json-0-users"
+
+key.converter: "org.apache.kafka.connect.storage.StringConverter"
+value.converter: "org.apache.kafka.connect.json.JsonConverter"
+value.converter.schemas.enable: false
+
+connection.url: "jdbc:oracle:thin:@oracle:1521/xepdb1"
+connection.user: "kafkaconnect"
+connection.password: "6UCa59tBPbGI"
+
+table.name.format: "KAFKACONNECT.USERS"
+
+pk.mode: "record_key"
+pk.fields: "USER_ID"
+delete.enabled: true
+
+insert.mode: "upsert"
+auto.create: "false"
+auto.evolve: "false"
+
+max.retries: 3
+
+# Note that only TableAlterOrCreateException and SQLException are handled with DLQ
+# https://github.com/confluentinc/kafka-connect-jdbc/blob/v10.7.1/src/main/java/io/confluent/connect/jdbc/sink/JdbcSinkTask.java#L91
+# https://github.com/confluentinc/kafka-connect-jdbc/blob/v10.7.1/src/main/java/io/confluent/connect/jdbc/sink/JdbcSinkTask.java#L98
+# Other exceptions are raised up to the WorkerSinkTask and result in connector task failure
+# https://github.com/apache/kafka/blob/3.4.0/connect/runtime/src/main/java/org/apache/kafka/connect/runtime/WorkerSinkTask.java#L583
+# https://github.com/apache/kafka/blob/3.4.0/connect/runtime/src/main/java/org/apache/kafka/connect/runtime/WorkerSinkTask.java#L612-L614
+errors.tolerance: "all"
+errors.deadletterqueue.topic.name: "json-0-dlq"
+errors.deadletterqueue.context.headers.enable: true
+errors.log.enable: true

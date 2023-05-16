@@ -1,0 +1,31 @@
+# This configuration uses custom JSON converter that produces
+# JDBC Sink compatible records from JSON messages
+connector.class: "io.confluent.connect.jdbc.JdbcSinkConnector"
+
+tasks.max: 1
+
+topics.regex: "json-1-users"
+
+key.converter: "org.apache.kafka.connect.storage.StringConverter"
+value.converter: "com.purbon.kafka.connect.converters.JSONConverter"
+
+connection.url: "jdbc:oracle:thin:@oracle:1521/xepdb1"
+connection.user: "kafkaconnect"
+connection.password: "6UCa59tBPbGI"
+
+table.name.format: "KAFKACONNECT.USERS"
+
+pk.mode: "record_key"
+pk.fields: "USER_ID"
+delete.enabled: true
+
+insert.mode: "upsert"
+auto.create: "false"
+auto.evolve: "false"
+
+max.retries: 3
+
+errors.tolerance: "all"
+errors.deadletterqueue.topic.name: "json-1-dlq"
+errors.deadletterqueue.context.headers.enable: true
+errors.log.enable: true

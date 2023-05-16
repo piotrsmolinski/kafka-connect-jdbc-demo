@@ -1,0 +1,165 @@
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+whitelistObjectNames:
+
+  - "kafka.connect:type=connect-worker-rebalance-metrics"
+  - "kafka.connect:type=connect-worker-metrics"
+  - "kafka.connect:type=connect-worker-metrics,connector=*"
+  - "kafka.connect:type=connect-node-metrics,node-id=*"
+  - "kafka.connect:type=connect-metrics,client-id=*"
+  - "kafka.connect:type=connect-coordinator-metrics,client-id=*"
+  - "kafka.connect:type=connector-metrics,connector=*"
+  - "kafka.connect:type=connector-task-metrics,connector=*,task=*"
+  - "kafka.connect:type=source-task-metrics,connector=*,task=*"
+  - "kafka.connect:type=sink-task-metrics,connector=*,task=*"
+  - "kafka.connect:type=task-error-metrics,connector=*,task=*"
+
+  - "confluent.replicator:type=confluent-replicator-task-metrics,*"
+
+  - "kafka.producer:type=producer-metrics,client-id=*"
+  - "kafka.producer:type=producer-node-metrics,client-id=*,node-id=*"
+  - "kafka.producer:type=producer-topic-metrics,client-id=*,topic=*"
+
+  - "kafka.consumer:type=consumer-metrics,client-id=*"
+  - "kafka.consumer:type=consumer-node-metrics,client-id=*,node-id=*"
+  - "kafka.consumer:type=consumer-coordinator-metrics,client-id=*"
+  - "kafka.consumer:type=fetch-manager-metrics,client-id=*"
+  - "kafka.consumer:type=fetch-manager-metrics,client-id=*,topic=*"
+  - "kafka.consumer:type=fetch-manager-metrics,client-id=*,topic=*,partition=*"
+
+rules:
+
+  - pattern : "confluent.replicator<type=confluent-replicator-task-metric,confluent-replicator-name=(.+?),confluent-replicator-task=(.+?),confluent-replicator-topic-name=(.+?),confluent-replicator-task-topic-partition=(.+?)><>confluent-replicator-(.+?):"
+    name: "confluent_replicator_$5"
+    type: GAUGE
+    labels:
+      name: "$1"
+      task: "$2"
+      topic: "$3"
+      partition: "$4"
+
+  - pattern : "kafka.connect<type=connect-worker-rebalance-metrics><>(.+?):"
+    name: "kafka_connect_worker_rebalance_metrics_$1"
+    type: GAUGE
+  - pattern : "kafka.connect<type=connect-worker-metrics><>(.+?):"
+    name: "kafka_connect_worker_metrics_$1"
+    type: GAUGE
+  - pattern: "kafka.connect<type=connect-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_connect_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+  - pattern: "kafka.connect<type=connect-coordinator-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_connect_coordinator_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+  - pattern : "kafka.connect<type=connect-worker-metrics, connector=(.+?)><>(.+?):"
+    name: "kafka_connect_worker_metrics_$2"
+    type: GAUGE
+    labels:
+      connector: "$1"
+  - pattern : "kafka.connect<type=connect-node-metrics, node-id=(.+?)><>(.+?):"
+    name: "kafka_connect_node_metrics_$2"
+    type: GAUGE
+    labels:
+      nodeId: "$1"
+  - pattern : "kafka.connect<type=task-error-metrics, connector=(.+?), task=(.+?)><>(.+?):"
+    name: "kafka_connect_task_error_metrics_$3"
+    type: GAUGE
+    labels:
+      connector: "$1"
+      task: "$2"
+  - pattern : "kafka.connect<type=connector-task-metrics, connector=(.+?)><>status: (.+)"
+    name: "kafka_connect_connector_task_metrics_count"
+    type: GAUGE
+    value: 1
+    labels:
+      connector: $1
+      status: $2
+  - pattern : "kafka.connect<type=connector-task-metrics, connector=(.+?)><>connector-type: (.+)"
+    name: "kafka_connect_connector_task_metrics_count"
+    type: GAUGE
+    value: 1
+    labels:
+      connector: $1
+      connectorType: $2
+  - pattern : "kafka.connect<type=connector-task-metrics, connector=(.+?), task=(.+?)><>status: (.+)"
+    name: "kafka_connect_connector_task_metrics_count"
+    type: GAUGE
+    value: 1
+    labels:
+      connector: $1
+      task: $2
+      status: $3
+  - pattern : "kafka.connect<type=connector-task-metrics, connector=(.+?), task=(.+?)><>(.+?):"
+    name: "kafka_connect_connector_task_metrics_$3"
+    type: GAUGE
+    labels:
+      connector: "$1"
+      task: "$2"
+  - pattern : "kafka.connect<type=source-task-metrics, connector=(.+?), task=(.+?)><>(.+?):"
+    name: "kafka_connect_source_task_metrics_$3"
+    type: GAUGE
+    labels:
+      connector: "$1"
+      task: "$2"
+  - pattern : "kafka.connect<type=source-task-metrics, connector=(.+?), task=(.+?)><>(.+?):"
+    name: "kafka_connect_sink_task_metrics_$3"
+    type: GAUGE
+    labels:
+      connector: "$1"
+      task: "$2"
+
+  - pattern: "kafka.producer<type=producer-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_producer_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+  - pattern: "kafka.producer<type=producer-node-metrics, client-id=(.+?), node-id=node-(.+?)><>(.+?):"
+    name: "kafka_producer_node_$3"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+      nodeId: "$2"
+  - pattern: "kafka.producer<type=producer-topic-metrics, client-id=(.+?), topic=(.+?)><>(.+?):"
+    name: "kafka_producer_topic_$3"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+      topic: "$2"
+
+  - pattern: "kafka.consumer<type=consumer-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_consumer_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+  - pattern: "kafka.consumer<type=consumer-node-metrics, client-id=(.+?), node-id=node-(.+?)><>(.+?):"
+    name: "kafka_consumer_node_$3"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+      nodeId: "$2"
+  - pattern: "kafka.consumer<type=consumer-coordinator-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_consumer_coordinator_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+  - pattern: "kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+?), topic=(.+?), partition=(.+?)><>(.+?):"
+    name: "kafka_consumer_fetch_manager_topic_partition_$4"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+      topic: "$2"
+      partition: "$3"
+  - pattern: "kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+?), topic=(.+?)><>(.+?):"
+    name: "kafka_consumer_fetch_manager_topic_$3"
+    type: GAUGE
+    labels:
+      clientId: "$1"
+      topic: "$2"
+  - pattern: "kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+?)><>(.+?):"
+    name: "kafka_consumer_fetch_manager_$2"
+    type: GAUGE
+    labels:
+      clientId: "$1"

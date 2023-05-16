@@ -1,0 +1,31 @@
+connector.class: "io.confluent.connect.jdbc.JdbcSinkConnector"
+
+tasks.max: 1
+
+topics.regex: "avro-0-users"
+
+key.converter: "org.apache.kafka.connect.storage.StringConverter"
+value.converter: "io.confluent.connect.avro.AvroConverter"
+value.converter.schema.registry.url: "http://registry:8081"
+value.converter.auto.register.schemas: false
+
+connection.url: "jdbc:oracle:thin:@oracle:1521/xepdb1"
+connection.user: "kafkaconnect"
+connection.password: "6UCa59tBPbGI"
+
+table.name.format: "KAFKACONNECT.USERS"
+
+pk.mode: "record_key"
+pk.fields: "USER_ID"
+delete.enabled: true
+
+insert.mode: "upsert"
+auto.create: "false"
+auto.evolve: "false"
+
+max.retries: 3
+
+errors.tolerance: "all"
+errors.deadletterqueue.topic.name: "avro-0-dlq"
+errors.deadletterqueue.context.headers.enable: true
+errors.log.enable: true

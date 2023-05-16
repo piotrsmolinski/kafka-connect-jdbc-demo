@@ -1,0 +1,34 @@
+configuration:
+  status: warn
+  thresholdFilter:
+    level: debug
+  appenders:
+    console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      patternLayout:
+        pattern: "%d [%t] %-5level %logger{36} - %msg%n%throwable"
+  loggers:
+    root:
+      level: info
+      appenderRef:
+        ref: STDOUT
+    logger:
+      - name: org.reflections.Reflections
+        level: ERROR
+      - name: org.apache.kafka
+        level: WARN
+      - name: org.apache.kafka.common.utils.AppInfoParser
+        level: ERROR
+      - name: org.apache.kafka.clients.producer.ProducerConfig
+        level: ERROR
+      - name: org.apache.kafka.clients.consumer.ConsumerConfig
+        level: ERROR
+      - name: org.apache.kafka.clients.admin.AdminClientConfig
+        level: ERROR
+      - name: io.confluent.connect
+        level: WARN
+      - name: io.confluent.kafka
+        level: WARN
+      - name: com.vfde.kafka.connect.smt
+        level: DEBUG

@@ -1,0 +1,70 @@
+
+log4j.rootLogger={{ env["CONNECT_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, stdout
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern ={{ env["CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN"] | default('[%d] %p %m (%c)%n') }}
+
+# unnecessary INFO logs from the source task
+log4j.appender.stdout.filter.1=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.1.StringToMatch=Committing offsets
+log4j.appender.stdout.filter.1.AcceptOnMatch=false
+log4j.appender.stdout.filter.2=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.2.StringToMatch=flushing 0 outstanding messages for offset commit
+log4j.appender.stdout.filter.2.AcceptOnMatch=false
+log4j.appender.stdout.filter.3=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.3.StringToMatch=Finished commitOffsets successfully in
+log4j.appender.stdout.filter.3.AcceptOnMatch=false
+
+# irrelevant logs from org.apache.kafka.connect.runtime.Worker
+log4j.appender.stdout.filter.4=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.4.StringToMatch=Set up the key converter class
+log4j.appender.stdout.filter.4.AcceptOnMatch=false
+log4j.appender.stdout.filter.5=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.5.StringToMatch=Set up the value converter class
+log4j.appender.stdout.filter.5.AcceptOnMatch=false
+log4j.appender.stdout.filter.6=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.stdout.filter.6.StringToMatch=Set up the header converter class
+log4j.appender.stdout.filter.6.AcceptOnMatch=false
+
+log4j.logger.org.apache.kafka.clients=WARN
+log4j.logger.org.apache.kafka.connect=INFO
+log4j.logger.org.apache.kafka.common=WARN
+log4j.logger.org.apache.kafka.clients.producer.ProducerConfig=ERROR
+log4j.logger.org.apache.kafka.clients.consumer.ConsumerConfig=ERROR
+log4j.logger.org.apache.kafka.clients.admin.AdminClientConfig=ERROR
+log4j.logger.io.confluent.connect=WARN
+log4j.logger.io.confluent.license=WARN
+log4j.logger.io.confluent.kafka.serializers=WARN
+
+log4j.logger.com.purbon.kafka=WARN
+
+# suppress JMX warning
+log4j.logger.org.apache.kafka.common.utils.AppInfoParser=ERROR
+
+# silence JAX-RS warnings
+log4j.logger.org.glassfish.jersey=ERROR
+
+# Jetty logs
+log4j.logger.org.eclipse.jetty=WARN
+
+# needed to confirm the component is started
+log4j.logger.org.apache.kafka.connect.runtime.Worker=INFO
+log4j.logger.org.apache.kafka.connect.runtime.Connect=INFO
+
+{% set default_loggers = {
+	'org.reflections': 'ERROR',
+	'org.apache.zookeeper': 'ERROR',
+	'org.I0Itec.zkclient': 'ERROR'
+} -%}
+
+{% if env['CONNECT_LOG4J_LOGGERS'] %}
+# loggers from CONNECT_LOG4J_LOGGERS env variable
+{% set loggers = parse_log4j_loggers(env['CONNECT_LOG4J_LOGGERS']) %}
+{% else %}
+# default log levels
+{% set loggers = default_loggers %}
+{% endif %}
+{% for logger,loglevel in loggers.items() %}
+log4j.logger.{{logger}}={{loglevel}}
+{% endfor %}

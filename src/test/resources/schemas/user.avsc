@@ -1,0 +1,10 @@
+type: record
+name: User
+namespace: test
+fields:
+- name: USER_ID
+  type: "string"
+- name: FIRST_NAME
+  type: "string"
+- name: LAST_NAME
+  type: "string"
