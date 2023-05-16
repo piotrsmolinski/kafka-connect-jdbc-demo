@@ -1,4 +1,6 @@
-# Alternative where the
+# Alternative where the message payload is read using regular JSON converter,
+# but then the schema is coerced to a fixed one
+# Note that despite payload being JSON, the target schema is derived from Avros
 connector.class: "io.confluent.connect.jdbc.JdbcSinkConnector"
 
 tasks.max: 1
